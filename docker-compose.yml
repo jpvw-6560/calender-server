@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  calendar_server:
+    build: .
+    container_name: calendar_server
+    env_file:
+      - .env
+    ports:
+      - "3004:3004"
+    volumes:
+      - ./public:/usr/src/app/public
+      - ./src:/usr/src/app/src
+      - ./config:/usr/src/app/config
+      - ./controllers:/usr/src/app/controllers
+      - ./models:/usr/src/app/models
+      - ./src/views:/usr/src/app/src/views
+    restart: unless-stopped

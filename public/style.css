@@ -1,0 +1,364 @@
+/* =========================
+   RESET & BASE
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =========================
+   LAYOUT PRINCIPAL
+========================= */
+.app-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+    background: #181818;
+    color: #e0e0e0;
+    padding: 20px;
+    border-right: 1px solid #282828;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .logo {
+    color: #1db954;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.nav-menu {
+    list-style: none;
+}
+
+.nav-item {
+    background: #121212;
+    color: #e0e0e0;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-item.active,
+.nav-item:hover {
+    background: #1db954;
+    color: #fff;
+}
+
+/* =========================
+   CONTENU PRINCIPAL
+========================= */
+.main-content {
+    padding: 32px;
+    overflow-y: auto;
+    background: #1d1c31;
+}
+
+/* =========================
+   TITRE CALENDRIER
+========================= */
+.calendar-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 24px;
+    background: #222;
+    border-radius: 12px;
+    padding: 18px 0;
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.calendar-title-bar button {
+    background: #1db954;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    cursor: pointer;
+}
+
+.calendar-title-bar button:hover {
+    background: #14863d;
+}
+
+/* =========================
+   CALENDRIER
+========================= */
+.calendar-table {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto 32px auto;
+    border-collapse: collapse;
+    background: #f7f7fa;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.10);
+    border: 2.5px solid #e0e0e0;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1.5px solid #bdbdbd;
+    height: 110px;
+    padding: 12px 0;
+    text-align: center;
+    vertical-align: top;
+    background: #f7f7fa;
+    color: #23243a;
+    position: relative;
+    box-sizing: border-box;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+/* Largeur fixe pour la colonne N° et largeur égale pour les jours */
+.calendar-table {
+    table-layout: fixed;
+}
+.calendar-table th.weeknum-header {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    background: #1db954;
+    color: #111;
+    font-weight: 700;
+    font-size: 1.08em;
+    border-bottom: 2.5px solid #bdbdbd;
+    vertical-align: middle;
+    padding: 0;
+    text-align: center;
+    transition: none;
+}
+.calendar-table td.weeknum {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+}
+.calendar-table th,
+.calendar-table td {
+    width: calc((1600px - 60px) / 7);
+    min-width: calc((1600px - 60px) / 7);
+    max-width: calc((1600px - 60px) / 7);
+}
+
+/* Structure interne des cellules du calendrier */
+.cell-top {
+    display: flex;
+    flex-direction: column;
+    background: #f0f0f6;
+    color: #e0e0e0;
+    position: relative;
+    box-sizing: border-box;
+}
+.cell-day {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #2512cf;
+    background: #fff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+    box-shadow: 0 2px 8px #1db95433;
+}
+.cell-saint {
+    font-size: 0.95em;
+    color: #00bcd4;
+    font-weight: 500;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 80px;
+}
+.cell-middle {
+    min-height: 18px;
+    font-size: 0.95em;
+    color: #e0e0e0;
+    margin-bottom: 4px;
+}
+.cell-bottom {
+    min-height: 18px;
+    font-size: 1.2em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* Structure rectangle 3 zones horizontales dans chaque cellule */
+.cell-rect {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+.cell-zone-top {
+    flex: 1 1 25%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px 0 8px;
+    font-size: 1em;
+    font-weight: 600;
+}
+.cell-zone-middle {
+    flex: 2 1 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.98em;
+    color: #151414;
+    padding: 2px 6px;
+    min-height: 28px;
+    word-break: break-word;
+}
+.cell-zone-bottom {
+    flex: 1 1 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    color: #fff;
+    gap: 6px;
+    padding-bottom: 2px;
+}
+
+.calendar-table th.calendar-th {
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    background: #1db954;
+    color: #111;
+    font-weight: 700;
+    font-size: 1.08em;
+    border-bottom: 2.5px solid #bdbdbd;
+    vertical-align: middle;
+    padding: 0;
+    transition: none;
+}
+
+.weeknum {
+    background: #1a1a1a;
+    color: #1976d2;
+    font-weight: 600;
+}
+
+/* =========================
+   CELLULE JOUR
+========================= */
+.day-sticky {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.calendar-today {
+    border: 4px solid #bfa100 !important;
+    background: #fffde7 !important;
+    color: #23243a !important;
+    font-weight: bold;
+    box-shadow: 0 0 14px #bfa10099;
+    border-radius: 14px;
+    z-index: 2;
+}
+
+/* =========================
+   BOUTONS NAVIGATION
+========================= */
+.calendar-controls {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.calendar-controls button {
+    background: #1db954;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 22px;
+    cursor: pointer;
+}
+
+.calendar-controls button:hover {
+    background: #14863d;
+}
+
+/* =========================
+   GRILLE ANNÉE
+========================= */
+.year-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-top: 32px;
+}
+
+.year-month-mini {
+    background: #222;
+    color: #e0e0e0;
+    border-radius: 12px;
+    padding: 14px 8px 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.1s, border 0.2s;
+    border: 2px solid transparent;
+}
+
+.year-month-mini:hover {
+    transform: scale(1.03);
+    border-color: #1db954;
+}
+
+/* =========================
+   BOUTON AUJOURD'HUI
+========================= */
+.btn-today {
+    background: #222;
+    color: #1db954;
+    border: 1.5px solid #1db954;
+    border-radius: 8px;
+    padding: 8px 18px;
+    cursor: pointer;
+}
+
+.btn-today:hover {
+    background: #1db954;
+    color: #fff;
+}

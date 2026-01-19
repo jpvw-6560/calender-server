@@ -1,0 +1,22 @@
+{
+  "name": "calendar_server",
+  "version": "1.0.0",
+  "description": "Application calendrier scolaire et gestion familiale (MVC, Node.js)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "dotenv": "^17.2.3",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "mysql2": "^3.16.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
