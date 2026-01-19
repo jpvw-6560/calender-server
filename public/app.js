@@ -1,3 +1,152 @@
+// Gestion du mode édition : désactive la création/modification/suppression si non activé
+document.addEventListener('DOMContentLoaded', () => {
+    // Vérifie le mode édition et affiche une notification si désactivé
+    function requireEditMode(action = 'cette action') {
+      if (!editToggle.checked) {
+        showNotification('Activez le mode édition pour ' + action + '.', 'warning');
+        return false;
+      }
+      return true;
+    }
+  const editToggle = document.getElementById('editmode-toggle');
+  const btnCreate = document.getElementById('btn-create-event');
+  if (!editToggle || !btnCreate) return;
+
+  function updateEditMode() {
+    const enabled = editToggle.checked;
+    // Ne pas désactiver le bouton, juste effet visuel
+    btnCreate.style.opacity = enabled ? '1' : '0.5';
+    btnCreate.style.cursor = enabled ? 'pointer' : 'not-allowed';
+    // Ferme la modale si le mode édition est désactivé
+    if (!enabled && modal) {
+      modal.style.display = 'none';
+    }
+    // TODO: désactiver aussi les boutons de suppression/modification si présents
+  }
+  editToggle.addEventListener('change', updateEditMode);
+  updateEditMode();
+
+  // Sécurise l'ouverture du formulaire
+  // Toujours intercepter le clic, même si le bouton est désactivé
+  btnCreate.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!requireEditMode('créer un événement')) return;
+    if (modal) {
+      modal.style.display = 'flex';
+      const typeSelect = document.getElementById('event-type');
+      if (typeSelect) {
+        const fields = document.getElementById('event-fields');
+        if (fields) {
+          // Forcer l'affichage des bons champs
+          if (typeof renderFields === 'function') renderFields(typeSelect.value);
+        }
+      }
+    }
+  }, true);
+});
+// Gestion du formulaire événement (modale)
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('modal-event');
+  const btnOpen = document.getElementById('btn-create-event');
+  const btnClose = document.getElementById('modal-event-close');
+  const form = document.getElementById('event-form');
+  const fields = document.getElementById('event-fields');
+  const typeSelect = document.getElementById('event-type');
+  if (!modal || !btnOpen || !btnClose || !form || !fields || !typeSelect) return;
+
+  function renderFields(type) {
+    if(type === 'birthday') {
+      fields.innerHTML = `
+        <label>Nom : <input name="name" required></label><br>
+        <label>Date de naissance : <input type="date" name="birthdate" required></label><br>
+        <label>Commentaire : <input name="comment"></label>
+      `;
+    } else if(type === 'recurring') {
+      fields.innerHTML = `
+        <label>Titre : <input name="title" required></label><br>
+        <label>Description : <input name="description"></label><br>
+        <label>Date de début : <input type="date" name="startDate" required></label><br>
+        <label>Date de fin : <input type="date" name="endDate"></label><br>
+        <label>Fréquence :
+          <select name="frequency" required>
+            <option value="weekly">Chaque semaine</option>
+            <option value="biweekly">Toutes les 2 semaines</option>
+          </select>
+        </label><br>
+        <label>Jours concernés :
+          <select name="daysOfWeek" multiple required>
+            <option value="lundi">Lundi</option>
+            <option value="mardi">Mardi</option>
+            <option value="mercredi">Mercredi</option>
+            <option value="jeudi">Jeudi</option>
+            <option value="vendredi">Vendredi</option>
+            <option value="samedi">Samedi</option>
+            <option value="dimanche">Dimanche</option>
+          </select>
+        </label>
+      `;
+    } else if(type === 'holiday') {
+      fields.innerHTML = `
+        <label>Nom : <input name="name" required></label><br>
+        <label>Date de début : <input type="date" name="startDate" required></label><br>
+        <label>Date de fin : <input type="date" name="endDate" required></label><br>
+        <label>Alternance :
+          <select name="alternance">
+            <option value="">Toutes années</option>
+            <option value="A">Année A</option>
+            <option value="B">Année B</option>
+          </select>
+        </label><br>
+        <label>Commentaire : <input name="comment"></label>
+      `;
+    } else if(type === 'single') {
+      fields.innerHTML = `
+        <label>Titre : <input name="title" required></label><br>
+        <label>Description : <input name="description"></label><br>
+        <label>Date et heure : <input type="datetime-local" name="date" required></label><br>
+        <label>Type :
+          <select name="type" required>
+            <option value="docteur">Docteur</option>
+            <option value="dentiste">Dentiste</option>
+            <option value="controle-technique">Contrôle technique</option>
+            <option value="autre">Autre</option>
+          </select>
+        </label>
+      `;
+    }
+  }
+
+  btnOpen.onclick = () => {
+    if (!requireEditMode('créer un événement')) return;
+    modal.style.display = 'flex';
+    renderFields(typeSelect.value);
+  };
+  btnClose.onclick = () => { modal.style.display = 'none'; };
+  modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  typeSelect.onchange = () => renderFields(typeSelect.value);
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    if (!editToggle.checked) {
+      showNotification('Activez le mode édition pour enregistrer un événement.', 'warning');
+      return;
+    }
+    const data = Object.fromEntries(new FormData(form).entries());
+    showNotification('Événement prêt à être enregistré (simulation)', 'success');
+    modal.style.display = 'none';
+    form.reset();
+    renderFields(typeSelect.value);
+    // TODO: envoyer vers l’API backend
+  };
+});
+// Fonction pour calculer le numéro de semaine ISO (accessible partout)
+function getWeekNumber(d) {
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+  return weekNo;
+}
 // Saints patrons de test pour chaque jour du mois courant
 function getSaintsForMonth(year, month) {
   const saints = [
@@ -53,7 +202,7 @@ const API_BASE = '/api/events';
   function createNotification(msg, type) {
     const notif = document.createElement('div');
     notif.className = `notification notification-${type}`;
-    notif.style.cssText = 'position: fixed !important; top: 20px !important; right: 20px !important; z-index: 99999 !important;';
+    // Le style est désormais géré par notification.css
     const icon = document.createElement('span'); 
     icon.className='notification-icon'; 
     icon.textContent=ICONS[type];
@@ -144,8 +293,10 @@ function renderYearCalendar(date = calendarDate) {
   const year = date.getFullYear();
   const mois = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   let html = `<div class="calendar-title-bar">
+    <button id="btn-prev-year">◀</button>
     <span>${year}</span>
-    <button id="btn-today" class="btn-today">Aujourd'hui</button>
+    <button id="btn-next-year">▶</button>
+    <button id="btn-today" class="btn-today">Année actuelle</button>
   </div>`;
   html += '<div class="year-grid">';
   const jours = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
@@ -155,8 +306,8 @@ function renderYearCalendar(date = calendarDate) {
     const lastDay = new Date(year, m+1, 0);
     const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
     const daysInMonth = lastDay.getDate();
-    const isCurrentMonth = (year === today.getFullYear() && m === today.getMonth());
-    html += `<div class="year-month-mini${isCurrentMonth ? ' calendar-today' : ''}" data-month="${m}">`;
+    // const isCurrentMonth = (year === today.getFullYear() && m === today.getMonth());
+    html += `<div class="year-month-mini" data-month="${m}">`;
     html += `<div class="mini-month-title">${mois[m]}</div>`;
     html += '<table class="mini-calendar-table"><thead><tr>';
     for(const j of jours) html += `<th>${j[0]}</th>`;
@@ -165,6 +316,7 @@ function renderYearCalendar(date = calendarDate) {
     for(let i=0; i<startDay; i++) html += '<td></td>';
     for(let i=startDay; i<7; i++) {
       let cellClass = '';
+      const isCurrentMonth = (year === today.getFullYear() && m === today.getMonth());
       if (isCurrentMonth && day === today.getDate()) cellClass = 'mini-today';
       html += `<td${cellClass ? ` class=\"${cellClass}\"` : ''}>${day++}</td>`;
     }
@@ -175,6 +327,7 @@ function renderYearCalendar(date = calendarDate) {
         if(day > daysInMonth) html += '<td></td>';
         else {
           let cellClass = '';
+          const isCurrentMonth = (year === today.getFullYear() && m === today.getMonth());
           if (isCurrentMonth && day === today.getDate()) cellClass = 'mini-today';
           html += `<td${cellClass ? ` class=\"${cellClass}\"` : ''}>${day++}</td>`;
         }
@@ -194,6 +347,15 @@ function renderYearCalendar(date = calendarDate) {
       setCalendarView('month');
     };
   });
+  // Navigation année précédente/suivante
+  document.getElementById('btn-prev-year').onclick = () => {
+    calendarDate = new Date(year - 1, 0, 1);
+    renderYearCalendar(calendarDate);
+  };
+  document.getElementById('btn-next-year').onclick = () => {
+    calendarDate = new Date(year + 1, 0, 1);
+    renderYearCalendar(calendarDate);
+  };
   // Bouton Aujourd'hui
   document.getElementById('btn-today').onclick = () => {
     calendarDate = new Date();
@@ -211,21 +373,42 @@ function renderWeekCalendar(date = calendarDate) {
   const monday = new Date(d.setDate(d.getDate() - dayOfWeek));
   let html = `<div class="calendar-title-bar">
     <button id="btn-prev-week">◀</button>
-    <span>Semaine du ${monday.toLocaleDateString('fr-FR')}</span>
+    <span>${monday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} - ${new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()+6).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} &nbsp; semaine ${getWeekNumber(monday)}</span>
     <button id="btn-next-week">▶</button>
-    <button id="btn-today" class="btn-today">Aujourd'hui</button>
+    <button id="btn-today" class="btn-today">Semaine actuelle</button>
   </div>`;
-  html += '<table class="calendar-table"><thead><tr>';
-  const jours = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-  for(const j of jours) html += `<th>${j}</th>`;
-  html += '</tr></thead><tbody><tr>';
+  // En-têtes de colonnes : nom du jour, grand numéro, mois, sous-titre (exemple)
+  const joursLong = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+  const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  // Saints et événements fictifs pour exemple
+  const saints = ['','', 'Saint-Sylvestre', '', 'Jour de l’an', '', ''];
+  const sousTitres = ['','','Saint-Sylvestre','Jour de l’an','','',''];
+  html += '<table class="calendar-week-table"><thead><tr>';
+  html += '<th class="week-hour-header"></th>'; // Colonne horaire vide en-tête
   for(let i=0; i<7; i++) {
     const day = new Date(monday);
     day.setDate(monday.getDate() + i);
     const isToday = day.toDateString() === today.toDateString();
-    html += `<td${isToday ? ' class="calendar-today"' : ''}>${day.getDate()}</td>`;
+    html += `<th class="week-col-header${isToday ? ' week-today' : ''}">`
+      + `<div class="week-day-name">${joursLong[i]}</div>`
+      + `<div class="week-day-number">${day.getDate()}</div>`
+      + `<div class="week-month">${mois[day.getMonth()]}</div>`
+      + `<div class="week-saint">${saints[i] || ''}</div>`
+      + `<div class="week-soustitre">${sousTitres[i] || ''}</div>`
+      + `</th>`;
   }
-  html += '</tr></tbody></table>';
+  html += '</tr></thead><tbody>';
+  // 0h à 23h (24 lignes horaires)
+  for(let h=0; h<24; h++) {
+    html += '<tr>';
+    // Colonne horaire à gauche
+    html += `<td class="week-hour-label">${h.toString().padStart(2,'0')}:00</td>`;
+    for(let i=0; i<7; i++) {
+      html += `<td class="week-hour-cell"></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
   content.innerHTML = html;
   // Navigation semaine précédente/suivante
   document.getElementById('btn-prev-week').onclick = () => {
@@ -264,7 +447,7 @@ function renderMonthCalendar(date = calendarDate) {
     <button id="btn-prev-month">◀</button>
     <span>${header}</span>
     <button id="btn-next-month">▶</button>
-    <button id="btn-today" class="btn-today">Aujourd'hui</button>
+    <button id="btn-today" class="btn-today">Mois actuel</button>
   </div>`;
   html += '<table class="calendar-table"><thead><tr>';
   html += '<th class="weeknum-header"><div class="th-center">N°</div></th>';
@@ -303,7 +486,9 @@ function renderMonthCalendar(date = calendarDate) {
         let zoneMiddle = `<div class='cell-zone-middle'>${dayEvents.some(ev => ev.text) ? dayEvents.map(ev => ev.text).join('<br>') : ''}${randomText}</div>`;
         let icons = dayEvents.map(ev => EVENT_ICONS[ev.type] || '');
         let zoneBottom = `<div class='cell-zone-bottom'>${icons.join(' ')}</div>`;
-        html += `<td${cellClass ? ` class=\"${cellClass}\"` : ''}><div class='cell-rect'>${zoneTop}${zoneMiddle}${zoneBottom}</div></td>`;
+        // Ajout d'un data-date pour chaque cellule jour
+        const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
+        html += `<td${cellClass ? ` class=\"${cellClass}\"` : ''} data-date='${dateStr}'><div class='cell-rect'>${zoneTop}${zoneMiddle}${zoneBottom}</div></td>`;
         day++;
       }
     }
@@ -312,7 +497,8 @@ function renderMonthCalendar(date = calendarDate) {
   }
   html += '</tbody></table>';
 
-// Fonction pour calculer le numéro de semaine ISO
+
+// Fonction pour calculer le numéro de semaine ISO (accessible partout)
 function getWeekNumber(d) {
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
@@ -321,6 +507,18 @@ function getWeekNumber(d) {
   return weekNo;
 }
   content.innerHTML = html;
+
+  // Clic sur un jour du mois => vue semaine correspondante
+  document.querySelectorAll('td[data-date]').forEach(td => {
+    td.style.cursor = 'pointer';
+    td.onclick = () => {
+      const [y, m, d] = td.getAttribute('data-date').split('-').map(Number);
+      calendarDate = new Date(y, m-1, d);
+      document.querySelectorAll('.btn-calnav').forEach(b => b.classList.remove('btn-calnav-active'));
+      document.querySelector('.btn-calnav[data-calview="week"]').classList.add('btn-calnav-active');
+      setCalendarView('week');
+    };
+  });
 
   // Navigation mois précédent/suivant
   document.getElementById('btn-prev-month').onclick = () => {

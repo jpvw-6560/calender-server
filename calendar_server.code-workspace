@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../music_server"
+		},
+		{
+			"path": "../recipe_server"
 		}
 	],
 	"settings": {}

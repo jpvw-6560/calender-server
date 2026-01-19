@@ -6,9 +6,13 @@
     <title>📅 Calendar Server</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
     <link rel="stylesheet" href="style.css?v=1">
+    <link rel="stylesheet" href="notification.css?v=1">
 </head>
 <body>
     <div id="notification-container"></div>
+    <div style="display:flex; justify-content:flex-end; align-items:center; padding:18px 32px 0 0;">
+        <label class="switch-editmode"><input type="checkbox" id="editmode-toggle"><span class="slider"></span> <span class="editmode-label">Mode édition</span></label>
+    </div>
     <div class="app-container">
         <!-- Barre de navigation -->
         <nav class="sidebar">
@@ -23,11 +27,37 @@
                 <li class="nav-item active" data-view="events">📅 Événements</li>
                 <li class="nav-item" data-view="stats">📊 Statistiques</li>
             </ul>
+            <div style="margin-top:32px; text-align:center;">
+                <button id="btn-create-event" class="btn-calnav" style="width:90%;max-width:260px;">➕ Créer un événement</button>
+            </div>
         </nav>
         <!-- Contenu principal -->
         <main class="main-content">
             <div id="content-view"></div>
         </main>
+        <!-- Modale formulaire événement -->
+        <div id="modal-event" class="modal-event-bg" style="display:none;">
+            <div class="modal-event-box">
+                <div class="modal-event-header">
+                    <span id="modal-event-title">Créer un événement</span>
+                    <button id="modal-event-close" title="Fermer">✖</button>
+                </div>
+                <form id="event-form">
+                    <label>Type d'événement :
+                        <select id="event-type" name="type" required>
+                            <option value="birthday">Anniversaire</option>
+                            <option value="recurring">Récurrent</option>
+                            <option value="holiday">Vacances scolaires</option>
+                            <option value="single">Ponctuel</option>
+                        </select>
+                    </label>
+                    <div id="event-fields"></div>
+                    <div style="margin-top:18px; text-align:right;">
+                        <button type="submit" class="btn-calnav" style="width:auto;">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <script src="app.js?v=1"></script>
 </body>

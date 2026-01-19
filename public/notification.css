@@ -1,0 +1,42 @@
+/* =========================
+   NOTIFICATIONS TOAST
+========================= */
+#notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+.notification {
+  min-width: 260px;
+  max-width: 340px;
+  background: #23243a;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  padding: 14px 18px 14px 14px;
+  font-size: 1.08em;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.notification-icon {
+  font-size: 1.3em;
+  margin-right: 10px;
+}
+.notification-info { background: #23243a; }
+.notification-success { background: #1db954; color: #fff; }
+.notification-warning { background: #f7b731; color: #23243a; }
+.notification-error { background: #c41e3a; color: #fff; }

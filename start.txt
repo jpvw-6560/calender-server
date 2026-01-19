@@ -1,0 +1,16 @@
+# Démarrage du serveur calendrier
+
+Pour lancer le serveur :
+
+- npm install
+- npm run dev
+
+Le serveur écoute sur le port 3004 par défaut.
+
+API REST accessible sur /api/events
+
+Interface web : http://localhost:3004/
+
+---
+
+Fichier créé automatiquement pour documentation rapide du projet calendar_server.

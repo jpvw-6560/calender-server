@@ -1,4 +1,171 @@
 /* =========================
+   SWITCH MODE ÉDITION
+========================= */
+.switch-editmode {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.13em;
+    color: #cfd8dc;
+    user-select: none;
+}
+.switch-editmode input[type="checkbox"] {
+    display: none;
+}
+.switch-editmode .slider {
+    width: 44px;
+    height: 24px;
+    background: #374151;
+    border-radius: 24px;
+    position: relative;
+    transition: background 0.2s;
+    cursor: pointer;
+    display: inline-block;
+}
+.switch-editmode .slider:before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+.switch-editmode input[type="checkbox"]:checked + .slider {
+    background: #1db954;
+}
+.switch-editmode input[type="checkbox"]:checked + .slider:before {
+    transform: translateX(20px);
+}
+.editmode-label {
+    margin-left: 6px;
+    font-weight: 500;
+    color: #cfd8dc;
+}
+.calendar-week-table th.week-hour-header {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    background: #f7f7fa;
+    border: 1.5px solid #bdbdbd;
+    color: #23243a;
+    font-weight: 700;
+    font-size: 1.08em;
+    text-align: right;
+    padding-right: 8px;
+}
+.calendar-week-table td.week-hour-label {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    background: #f7f7fa;
+    border: 1px solid #bdbdbd;
+    color: #23243a;
+    font-size: 1.08em;
+    text-align: right;
+    padding-right: 8px;
+    font-weight: 500;
+}
+/* =========================
+   CALENDRIER SEMAINE (vue papier)
+========================= */
+.calendar-week-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: #fff;
+    margin: 0 auto 32px auto;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.10);
+    border: 2.5px solid #bdbdbd;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.calendar-week-table th.week-col-header {
+    border: 1.5px solid #bdbdbd;
+    background: #fff;
+    color: #23243a;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: top;
+    padding: 8px 0 0 0;
+    height: 120px;
+    min-width: 120px;
+    max-width: 160px;
+}
+.calendar-week-table th.week-today {
+    background: #f7f7fa;
+    border: 2.5px solid #1db954;
+}
+.week-day-name {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+.week-day-number {
+    font-size: 2.6em;
+    font-weight: 900;
+    color: #23243a;
+    line-height: 1;
+}
+.week-month {
+    font-size: 1em;
+    color: #23243a;
+    margin-bottom: 2px;
+}
+.week-saint, .week-soustitre {
+    font-size: 0.95em;
+    color: #c41e3a;
+    font-style: italic;
+    margin-bottom: 2px;
+}
+.calendar-week-table td.week-hour-cell {
+    border: 1px solid #bdbdbd;
+    background: #fff;
+    color: #23243a;
+    height: 32px;
+    min-width: 120px;
+    max-width: 160px;
+    text-align: left;
+    padding: 2px 8px;
+    font-size: 1.08em;
+}
+.calendar-week-table tr {
+    height: 32px;
+}
+/* =========================
+   BOUTONS CALENDRIER SIDEBAR
+========================= */
+.btn-calnav {
+    width: 100%;
+    display: block;
+    background: #23243a;
+    color: #1db954;
+    border: 2px solid #1db954;
+    border-radius: 24px;
+    font-size: 1.13em;
+    font-weight: 600;
+    padding: 12px 0;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px #1db95422;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+    outline: none;
+    letter-spacing: 0.5px;
+}
+.btn-calnav:hover {
+    background: #1db954;
+    color: #fff;
+    box-shadow: 0 4px 16px #1db95444;
+    border-color: #1db954;
+}
+.btn-calnav.btn-calnav-active, .btn-calnav:active {
+    background: linear-gradient(90deg, #1db954 80%, #14863d 100%);
+    color: #fff;
+    border-color: #14863d;
+    box-shadow: 0 2px 12px #1db95455;
+}
+/* =========================
    RESET & BASE
 ========================= */
 * {
@@ -330,15 +497,59 @@ body {
     margin-top: 32px;
 }
 
+
 .year-month-mini {
     background: #222;
     color: #e0e0e0;
     border-radius: 12px;
-    padding: 14px 8px 18px;
+    padding: 18px 10px 22px 10px;
     text-align: center;
     cursor: pointer;
     transition: transform 0.1s, border 0.2s;
     border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+}
+
+.mini-month-title {
+    font-size: 1.08em;
+    font-weight: 600;
+    color: #1db954;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.mini-calendar-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 2px 3px;
+    margin-bottom: 0;
+}
+.mini-calendar-table th {
+    color: #b0ffb0;
+    font-size: 0.93em;
+    font-weight: 500;
+    padding: 2px 0 4px 0;
+    background: none;
+    border: none;
+    letter-spacing: 0.2em;
+}
+.mini-calendar-table td {
+    font-size: 0.97em;
+    padding: 2px 0 2px 0;
+    background: #23243a;
+    border-radius: 4px;
+    color: #e0e0e0;
+    min-width: 1.7em;
+    min-height: 1.7em;
+    text-align: center;
+}
+.mini-calendar-table td.mini-today {
+    background: #1db954;
+    color: #fff;
+    font-weight: bold;
 }
 
 .year-month-mini:hover {
