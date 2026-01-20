@@ -1,3 +1,4 @@
+console.log(JSON.stringify(req.body));
 const Event = require('../models/Event');
 
 // API REST : retourne tous les événements en JSON
@@ -13,9 +14,10 @@ exports.getAllEvents = async (req, res) => {
 // Ajoute un événement (API REST)
 exports.addEvent = async (req, res) => {
   try {
-    const { title, date, type } = req.body;
-    const result = await Event.create({ title, date, type });
-    res.status(201).json({ message: 'Événement ajouté', event: result });
+    const { title, date, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence } = req.body;
+    console.log('Event.create payload:', { title, date, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence });
+    await Event.create({ title, date, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence });
+    res.status(201).json({ message: 'Événement ajouté' });
   } catch (err) {
     res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'événement' });
   }

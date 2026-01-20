@@ -37,8 +37,9 @@ exports.getAllEvents = async (req, res) => {
 // Ajouter un événement (POST /api/events)
 exports.addEvent = async (req, res) => {
   try {
-    const { title, date, type } = req.body;
-    await Event.create({ title, date, type });
+    let { title, date, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence } = req.body;
+    if (type === 'birthday') recurrence = 'yearly';
+    await Event.create({ title, date, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence });
     res.status(201).json({ message: 'Événement ajouté.' });
   } catch (err) {
     res.status(500).json({ error: "Erreur lors de l'ajout de l'événement." });

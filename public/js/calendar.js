@@ -91,24 +91,23 @@ export function renderMonth() {
       const date = new Date(year, month, day);
       const saint = saints[(day-1) % saints.length];
       const key = date.toISOString().slice(0,10);
-      const dayEvents = eventsByDate[key] || [];
+      // TEST : injecter du contenu de test si aucun événement réel
+      let testEvents = [];
+      if (day === 7) testEvents.push({ title: 'Rdv Ophtalmo', icon: '👁️' });
+      if (day === 10) testEvents.push({ icon: '📦' }); // poubelles cartons, pas de texte
+      if (day === 15) testEvents.push({ title: 'Contrôle technique', icon: '🚗' });
+      if (day === 20) testEvents.push({ title: "Anniversaire de Toto", icon: '🎂' });
+      if (day === 25) testEvents.push({ title: 'Vacances', icon: '🏖️' });
+      const dayEvents = (eventsByDate[key] || []).concat(testEvents);
       const isToday = (date.toDateString() === new Date().toDateString());
-      // Icônes par type d'événement
-      const typeIcons = {
-        birthday: '🎂',
-        recurring: '🔁',
-        holiday: '🏖️',
-        single: '📌',
-        default: '⭐'
-      };
       html += `<td data-day="${day}">
         <div class="cell-rect">
           <div class="cell-zone-top">
             <span class="cell-day${isToday ? ' cell-day-today' : ''}">${day}</span>
             <span class="cell-saint">${saint}</span>
           </div>
-          <div class="cell-zone-middle">${dayEvents.map(ev => `<div class='event-title'>${ev.title}</div>`).join('') || '&nbsp;'}</div>
-          <div class="cell-zone-bottom">${dayEvents.map(ev => typeIcons[ev.type] || typeIcons.default).join(' ') || '🌟'}</div>
+          <div class="cell-zone-middle">${dayEvents.map(ev => ev.title ? `<div class='event-title'>${ev.title}</div>` : '').join('') || '&nbsp;'}</div>
+          <div class="cell-zone-bottom">${dayEvents.map(ev => ev.icon ? ev.icon : '').join(' ')}</div>
         </div>
       </td>`;
       if ((start + day) % 7 === 0) html += '</tr><tr>';

@@ -11,7 +11,11 @@
 <body>
     <div id="notification-container"></div>
     <div style="display:flex; justify-content:flex-end; align-items:center; padding:18px 32px 0 0;">
-        <label class="switch-editmode"><input type="checkbox" id="editmode-toggle"><span class="slider"></span> <span class="editmode-label">Mode édition</span></label>
+        <label class="switch-editmode">
+            <input type="checkbox" id="editmode-toggle">
+            <span class="slider round"></span>
+            <span class="editmode-label">Mode édition</span>
+        </label>
     </div>
     <div class="app-container">
         <!-- Barre de navigation -->
@@ -50,6 +54,52 @@
                             <option value="holiday">Vacances scolaires</option>
                             <option value="single">Ponctuel</option>
                         </select>
+                    </label>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label id="recurrence-row" style="flex-direction:row;gap:12px;align-items:center;display:none;">
+                            <span>Récurrence :</span>
+                            <select id="event-recurrence" name="recurrence" style="width:180px;">
+                                <option value="daily">Tous les jours</option>
+                                <option value="weekly">Toutes les semaines</option>
+                                <option value="biweekly">Tous les quinze jours</option>
+                                <option value="monthly">Tous les mois</option>
+                                <option value="yearly">Chaque année</option>
+                            </select>
+                        </label>
+                        <label style="flex-direction:row;gap:12px;align-items:center;">
+                            <span>Date de l'événement :</span>
+                            <input type="date" id="event-date" name="date" required style="width:160px;">
+                        </label>
+                        <label style="flex-direction:row;gap:12px;">
+                            <input type="checkbox" id="event-show-title" name="showTitle" checked>
+                            <span>Afficher le texte dans la zone centrale :</span>
+                            <input type="text" id="event-title" name="title" maxlength="64" placeholder="Texte ou nom (optionnel)" style="flex:1;">
+                        </label>
+                        <label style="flex-direction:row;gap:12px;align-items:center;">
+                            <input type="checkbox" id="event-show-icon" name="showIcon" checked>
+                            <span>Afficher une icône dans la zone inférieure :</span>
+                            <input type="text" id="event-icon" name="icon" maxlength="2" placeholder="ex: 🎂" style="width:3em;text-align:center;">
+                            <select id="event-icon-list" style="margin-left:8px;">
+                                <option value="">(choisir)</option>
+                                <option value="🎂">🎂 Anniversaire</option>
+                                <option value="🚗">🚗 Voiture</option>
+                                <option value="🏖️">🏖️ Vacances</option>
+                                <option value="👁️">👁️ Ophtalmo</option>
+                                <option value="🔁">🔁 Récurrent</option>
+                                <option value="📌">📌 Ponctuel</option>
+                                <option value="📦">📦 Cartons</option>
+                                <option value="🟦">🟦 PMC (sac bleu)</option>
+                                <option value="🗑️">🗑️ Déchets résiduels</option>
+                                <option value="🟩">🟩 Déchets organiques</option>
+                                <option value="">(autre)</option>
+                            </select>
+                        </label>
+                    </div>
+                    <label style="display:flex;align-items:center;gap:8px;">
+                        <input type="checkbox" id="event-telegram" name="sendTelegram">
+                        <span class="slider round" style="width:32px;height:18px;"></span>
+                        <span>Envoyer une notification Telegram à</span>
+                        <input type="time" id="event-telegram-time" name="telegramTime" style="width:110px; display:none;">
                     </label>
                     <div id="event-fields"></div>
                     <div style="margin-top:18px; text-align:right;">
