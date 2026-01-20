@@ -58,13 +58,48 @@ export function renderMonth() {
     const eventsData = await fetchEvents();
     // eventsData peut être { events: [...] } ou juste un tableau
     const events = Array.isArray(eventsData) ? eventsData : (eventsData.events || []);
-    // Indexation rapide par date (format YYYY-MM-DD)
+    // Indexation par date réelle + gestion des récurrences
     const eventsByDate = {};
     for (const ev of events) {
       if (!ev.date) continue;
-      const key = ev.date.slice(0,10); // YYYY-MM-DD
-      if (!eventsByDate[key]) eventsByDate[key] = [];
-      eventsByDate[key].push(ev);
+      const baseDate = new Date(ev.date);
+      const y = baseDate.getFullYear();
+      const m = baseDate.getMonth();
+      const d = baseDate.getDate();
+      // Générer toutes les occurrences du mois courant selon la récurrence
+      let occs = [];
+      if (!ev.recurrence || ev.recurrence === 'none') {
+        // Non récurrent
+        if (y === year && m === month) occs = [d];
+      } else if (ev.recurrence === 'daily') {
+        for (let day = 1; day <= last.getDate(); day++) occs.push(day);
+      } else if (ev.recurrence === 'biweekly') {
+        // Afficher toutes les occurrences tous les 15 jours à partir de la date de départ
+        let occurrence = new Date(baseDate);
+        // Avancer jusqu'à la première occurrence dans le mois affiché
+        while (occurrence < new Date(year, month, 1)) {
+          occurrence.setDate(occurrence.getDate() + 14);
+        }
+        // Ajouter toutes les occurrences du mois affiché
+        while (occurrence.getFullYear() === year && occurrence.getMonth() === month && occurrence <= last) {
+          occs.push(occurrence.getDate());
+          occurrence.setDate(occurrence.getDate() + 14);
+        }
+      } else if (ev.recurrence === 'biweekly') {
+        // Trouver le premier jour >= baseDate dans le mois
+        let first = new Date(year, month, d);
+        if (first.getMonth() !== month) first = new Date(year, month, 1 + ((d-1)%14));
+        for (let day = first.getDate(); day <= last.getDate(); day += 14) occs.push(day);
+      } else if (ev.recurrence === 'monthly') {
+        if (d <= last.getDate()) occs = [d];
+      } else if (ev.recurrence === 'yearly') {
+        if (m === month && d <= last.getDate()) occs = [d];
+      }
+      for (const day of occs) {
+        const key = new Date(year, month, day).toISOString().slice(0,10);
+        if (!eventsByDate[key]) eventsByDate[key] = [];
+        eventsByDate[key].push(ev);
+      }
     }
 
     let html = `
@@ -81,30 +116,15 @@ export function renderMonth() {
 
     for (let i = 0; i < start; i++) html += '<td></td>';
 
-    // Saints patrons de test (31 noms cycliques)
-    const saints = [
-      'St Marie', 'St Paul', 'St Pierre', 'St Barnabé', 'St Antoine', 'St Jean', 'St Luc', 'St Marc', 'St Denis', 'St Martin',
-      'St André', 'St Nicolas', 'Ste Lucie', 'St Urbain', 'St Thomas', 'St Etienne', 'St Jean', 'St Innocents', 'St David', 'St Sylvestre',
-      'St Joseph', 'St Patrick', 'St Georges', 'St Philippe', 'St Jacques', 'St Augustin', 'St Michel', 'St François', 'St Simon', 'St Jude', 'St Saturnin'
-    ];
     for (let day = 1; day <= last.getDate(); day++) {
       const date = new Date(year, month, day);
-      const saint = saints[(day-1) % saints.length];
       const key = date.toISOString().slice(0,10);
-      // TEST : injecter du contenu de test si aucun événement réel
-      let testEvents = [];
-      if (day === 7) testEvents.push({ title: 'Rdv Ophtalmo', icon: '👁️' });
-      if (day === 10) testEvents.push({ icon: '📦' }); // poubelles cartons, pas de texte
-      if (day === 15) testEvents.push({ title: 'Contrôle technique', icon: '🚗' });
-      if (day === 20) testEvents.push({ title: "Anniversaire de Toto", icon: '🎂' });
-      if (day === 25) testEvents.push({ title: 'Vacances', icon: '🏖️' });
-      const dayEvents = (eventsByDate[key] || []).concat(testEvents);
+      const dayEvents = eventsByDate[key] || [];
       const isToday = (date.toDateString() === new Date().toDateString());
       html += `<td data-day="${day}">
         <div class="cell-rect">
           <div class="cell-zone-top">
             <span class="cell-day${isToday ? ' cell-day-today' : ''}">${day}</span>
-            <span class="cell-saint">${saint}</span>
           </div>
           <div class="cell-zone-middle">${dayEvents.map(ev => ev.title ? `<div class='event-title'>${ev.title}</div>` : '').join('') || '&nbsp;'}</div>
           <div class="cell-zone-bottom">${dayEvents.map(ev => ev.icon ? ev.icon : '').join(' ')}</div>
