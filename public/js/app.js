@@ -1,4 +1,4 @@
-    // Affichage dynamique du champ récurrence
+// Affichage dynamique du champ récurrence
     const eventType = document.getElementById('event-type');
     const recurrenceRow = document.getElementById('recurrence-row');
     if (eventType && recurrenceRow) {
@@ -92,10 +92,108 @@
 // app.js
 import { initEditModeToggle } from './ui.js';
 import { setCalendarView } from './calendar.js';
-
 import { requireEditMode } from './ui.js';
+import { state } from './state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Gestion du bouton "Événements" (sidebar) avec affichage moderne
+    const btnEvents = document.querySelector('.nav-item[data-view="events"]');
+    if (btnEvents) {
+      btnEvents.onclick = async () => {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        btnEvents.classList.add('active');
+        const content = document.getElementById('content-view');
+        content.innerHTML = '<div class="event-list-loading">Chargement...</div>';
+        const { fetchEvents } = await import('./events.js');
+        const eventsData = await fetchEvents();
+        let events = Array.isArray(eventsData) ? eventsData : (eventsData.events || []);
+        // Tri alphabétique par titre (insensible à la casse)
+        events = events.slice().sort((a, b) => (a.title || '').localeCompare(b.title || '', 'fr', { sensitivity: 'base' }));
+        if (!events.length) {
+          content.innerHTML = '<div class="event-list-empty">Aucun événement enregistré.</div>';
+          return;
+        }
+        // Importe le state pour le mode édition et affiche la liste stylée
+        import('./state.js').then(({ state }) => {
+          const editMode = state.editMode;
+          content.innerHTML = `
+            <div class="event-list-title">📅 Tous les événements</div>
+            <div class="event-list-modern">
+              ${events.map(ev => `
+                <div class="event-card">
+                  <div class="event-card-header">
+                    <span class="event-card-title">${ev.title || '(Sans titre)'}</span>
+                    ${ev.icon ? `<span class="event-card-icon">${ev.icon}</span>` : ''}
+                  </div>
+                  <div class="event-card-details">
+                    <span class="event-card-date">${ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : ''}</span>
+                    ${ev.recurrence && ev.recurrence !== 'none' ? `<span class="event-card-recurrence">${ev.recurrence}</span>` : ''}
+                    ${ev.sendTelegram ? `<span class="event-card-telegram">🔔 Telegram${ev.telegramTime ? ' à ' + ev.telegramTime : ''}</span>` : ''}
+                  </div>
+                  ${editMode ? `<div class="event-card-actions-bar">
+                    <button class="event-edit-btn" title="Modifier" data-id="${ev.id}">✏️</button>
+                    <button class="event-delete-btn" title="Supprimer" data-id="${ev.id}">🗑️</button>
+                  </div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        });
+        // Actions Modifier/Supprimer (listeners à ajouter ici)
+        setTimeout(() => {
+          document.querySelectorAll('.event-edit-btn').forEach(btn => {
+            btn.onclick = () => {
+              const eventId = btn.getAttribute('data-id');
+              // TODO: ouvrir la modale d'édition pour l'événement eventId
+              alert('Modifier événement ' + eventId);
+            };
+          });
+          document.querySelectorAll('.event-delete-btn').forEach(btn => {
+            btn.onclick = () => {
+              const eventId = btn.getAttribute('data-id');
+              import('./ui.js').then(({ showNotification }) => {
+                // Affiche le toast avec boutons Oui/Annuler
+                showNotification(
+                  `<div>Confirmer la suppression ?</div>
+                   <div style='margin-top:8px;'>
+                     <button id='toast-confirm-yes' style='background:#e53935;color:#fff;border:none;padding:6px 16px;border-radius:6px;margin-right:8px;cursor:pointer;'>Oui</button>
+                     <button id='toast-confirm-no' style='background:#eee;color:#333;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;'>Annuler</button>
+                   </div>`,
+                  'warning',
+                  10000 // Toast visible 10s
+                );
+                setTimeout(() => {
+                  const btnYes = document.getElementById('toast-confirm-yes');
+                  const btnNo = document.getElementById('toast-confirm-no');
+                  if (btnYes) {
+                    btnYes.onclick = () => {
+                      import('./events.js').then(({ deleteEvent }) => {
+                        deleteEvent(eventId).then(() => {
+                          showNotification('Événement supprimé', 'success');
+                          // Rafraîchir la liste après suppression
+                          const activeNav = document.querySelector('.nav-item.active');
+                          if (activeNav && activeNav.dataset.view === 'events') {
+                            activeNav.click();
+                          }
+                        });
+                      });
+                      // Ferme le toast
+                      btnYes.closest('.toast')?.remove();
+                    };
+                  }
+                  if (btnNo) {
+                    btnNo.onclick = () => {
+                      // Ferme le toast
+                      btnNo.closest('.toast')?.remove();
+                    };
+                  }
+                }, 100); // Laisse le temps au DOM d'insérer le toast
+              });
+            };
+          });
+        }, 0);
+      };
+    }
   initEditModeToggle();
 
   document.querySelectorAll('.btn-calnav').forEach(btn => {
@@ -132,6 +230,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (iconList.value) iconInput.value = iconList.value;
     });
   }
+
+  // Ajout : réaffichage de la liste si editMode change et vue événements active
+const editModeToggle = document.getElementById('edit-mode-toggle');
+if (editModeToggle) {
+  editModeToggle.addEventListener('change', () => {
+    const activeNav = document.querySelector('.nav-item.active');
+    if (activeNav && activeNav.dataset.view === 'events') {
+      // Simule un clic pour forcer le réaffichage
+      activeNav.click();
+    }
+  });
+}
 
   setCalendarView('month');
 });

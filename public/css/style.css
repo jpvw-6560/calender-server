@@ -1,3 +1,137 @@
+.event-card-actions-bar {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    background: #1db954;
+    border-radius: 18px;
+    margin: 12px 0 0 0;
+    padding: 8px 0;
+    box-shadow: 0 2px 8px #1db95433;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    margin-top: auto;
+}
+.event-edit-btn, .event-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3em;
+    padding: 4px 10px;
+    border-radius: 12px;
+    transition: background 0.15s;
+    color: #fff;
+}
+.event-edit-btn:hover {
+    background: #e3f2fd;
+    color: #0d3c61;
+}
+.event-delete-btn:hover {
+    background: #ffebee;
+    color: #e53935;
+}
+.event-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: 8px;
+}
+.event-edit-btn, .event-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.event-edit-btn:hover {
+    background: #e3f2fd;
+}
+.event-delete-btn:hover {
+    background: #ffebee;
+}
+/* ===== Liste des événements moderne ===== */
+.event-list-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #1db954;
+    letter-spacing: 1px;
+}
+.event-list-modern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+.event-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px #1db95422;
+    padding: 18px 22px 12px 22px;
+    min-width: 220px;
+    max-width: 320px;
+    flex: 1 1 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.event-card:hover {
+    box-shadow: 0 4px 24px #1db95444;
+}
+.event-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+.event-card-title {
+    flex: 1;
+    color: #0d3c61;
+    font-size: 1.1em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.event-card-icon {
+    font-size: 1.5em;
+    margin-left: 6px;
+}
+.event-card-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.98em;
+    color: #555;
+}
+.event-card-date {
+    background: #e0f7fa;
+    color: #0d3c61;
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+.event-card-recurrence {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+.event-card-telegram {
+    background: #fff3e0;
+    color: #e65100;
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+.event-list-loading, .event-list-empty {
+    font-size: 1.1em;
+    color: #888;
+    margin: 32px 0;
+    text-align: center;
+}
 /* =========================================================
    1. RESET & BASE (INIT — TOUJOURS EN HAUT)
 ========================================================= */
