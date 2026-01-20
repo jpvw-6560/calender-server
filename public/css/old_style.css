@@ -1,6 +1,188 @@
-/* =========================
-   SWITCH MODE ÉDITION
-========================= */
+.event-title {
+    background: #e0f7fa;
+    color: #0d3c61;
+    border-radius: 6px;
+    padding: 1px 6px;
+    margin: 1px 0;
+    font-size: 0.98em;
+    font-weight: 500;
+    box-shadow: 0 1px 4px #1db95422;
+    white-space: pre-line;
+    text-align: center;
+    max-width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cell-day-today {
+    background: #1db954 !important;
+    color: #fff !important;
+    border: 2px solid #0e7c2f;
+    box-shadow: 0 0 0 3px #1db95455, 0 2px 8px #1db95433;
+    z-index: 2;
+}
+
+/* Structure rectangle 3 zones horizontales dans chaque cellule */
+.cell-rect {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.cell-zone-top {
+    flex: 0 0 25%;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px 0 8px;
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.cell-day {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #2512cf;
+    background: #fff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+    box-shadow: 0 2px 8px #1db95433;
+}
+
+.cell-saint {
+    font-size: 0.95em;
+    color: #00bcd4;
+    font-weight: 500;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 80px;
+}
+
+.cell-zone-middle {
+    flex: 0 0 50%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.98em;
+    color: #151414;
+    padding: 2px 6px;
+    min-height: 28px;
+    word-break: break-word;
+}
+
+.cell-zone-bottom {
+    flex: 0 0 25%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    color: #fff;
+    gap: 6px;
+    padding-bottom: 2px;
+}
+
+/* ========================= MODALE ÉVÉNEMENT ========================= */
+.modal-event-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(20, 20, 30, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modal-event-box {
+    background: #23243a;
+    color: #e0e0e0;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    padding: 32px 28px 24px 28px;
+    min-width: 320px;
+    max-width: 98vw;
+    width: 400px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.modal-event-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+#modal-event-title {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: #1db954;
+}
+
+#modal-event-close {
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    font-size: 1.3em;
+    cursor: pointer;
+    transition: color 0.18s;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+#modal-event-close:hover {
+    color: #fff;
+    background: #1db954;
+}
+
+#event-form label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+    color: #b0ffb0;
+}
+
+#event-form input,
+#event-form select {
+    width: 100%;
+    padding: 7px 10px;
+    margin-top: 4px;
+    border-radius: 6px;
+    border: 1.5px solid #1db954;
+    background: #181818;
+    color: #e0e0e0;
+    font-size: 1em;
+    margin-bottom: 6px;
+    outline: none;
+    transition: border 0.18s;
+}
+
+#event-form input:focus,
+#event-form select:focus {
+    border-color: #b0ffb0;
+}
+
+#event-form button[type="submit"] {
+    margin-top: 8px;
+}
+
+/* ========================= SWITCH MODE ÉDITION ========================= */
 .switch-editmode {
     display: inline-flex;
     align-items: center;
@@ -9,9 +191,11 @@
     color: #cfd8dc;
     user-select: none;
 }
+
 .switch-editmode input[type="checkbox"] {
     display: none;
 }
+
 .switch-editmode .slider {
     width: 44px;
     height: 24px;
@@ -22,6 +206,7 @@
     cursor: pointer;
     display: inline-block;
 }
+
 .switch-editmode .slider:before {
     content: '';
     position: absolute;
@@ -33,17 +218,21 @@
     border-radius: 50%;
     transition: transform 0.2s;
 }
-.switch-editmode input[type="checkbox"]:checked + .slider {
+
+.switch-editmode input[type="checkbox"]:checked+.slider {
     background: #1db954;
 }
-.switch-editmode input[type="checkbox"]:checked + .slider:before {
+
+.switch-editmode input[type="checkbox"]:checked+.slider:before {
     transform: translateX(20px);
 }
+
 .editmode-label {
     margin-left: 6px;
     font-weight: 500;
     color: #cfd8dc;
 }
+
 .calendar-week-table th.week-hour-header {
     width: 60px;
     min-width: 60px;
@@ -56,6 +245,7 @@
     text-align: right;
     padding-right: 8px;
 }
+
 .calendar-week-table td.week-hour-label {
     width: 60px;
     min-width: 60px;
@@ -68,19 +258,19 @@
     padding-right: 8px;
     font-weight: 500;
 }
-/* =========================
-   CALENDRIER SEMAINE (vue papier)
-========================= */
+
+/* ========================= CALENDRIER SEMAINE (vue papier) ========================= */
 .calendar-week-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
     background: #fff;
     margin: 0 auto 32px auto;
-    box-shadow: 0 2px 24px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.10);
     border: 2.5px solid #bdbdbd;
     font-family: Arial, Helvetica, sans-serif;
 }
+
 .calendar-week-table th.week-col-header {
     border: 1.5px solid #bdbdbd;
     background: #fff;
@@ -93,32 +283,39 @@
     min-width: 120px;
     max-width: 160px;
 }
+
 .calendar-week-table th.week-today {
     background: #f7f7fa;
     border: 2.5px solid #1db954;
 }
+
 .week-day-name {
     font-size: 1.15em;
     font-weight: 700;
     margin-bottom: 2px;
 }
+
 .week-day-number {
     font-size: 2.6em;
     font-weight: 900;
     color: #23243a;
     line-height: 1;
 }
+
 .week-month {
     font-size: 1em;
     color: #23243a;
     margin-bottom: 2px;
 }
-.week-saint, .week-soustitre {
+
+.week-saint,
+.week-soustitre {
     font-size: 0.95em;
     color: #c41e3a;
     font-style: italic;
     margin-bottom: 2px;
 }
+
 .calendar-week-table td.week-hour-cell {
     border: 1px solid #bdbdbd;
     background: #fff;
@@ -130,12 +327,12 @@
     padding: 2px 8px;
     font-size: 1.08em;
 }
+
 .calendar-week-table tr {
     height: 32px;
 }
-/* =========================
-   BOUTONS CALENDRIER SIDEBAR
-========================= */
+
+/* ========================= BOUTONS CALENDRIER SIDEBAR ========================= */
 .btn-calnav {
     width: 100%;
     display: block;
@@ -153,21 +350,23 @@
     outline: none;
     letter-spacing: 0.5px;
 }
+
 .btn-calnav:hover {
     background: #1db954;
     color: #fff;
     box-shadow: 0 4px 16px #1db95444;
     border-color: #1db954;
 }
-.btn-calnav.btn-calnav-active, .btn-calnav:active {
+
+.btn-calnav.btn-calnav-active,
+.btn-calnav:active {
     background: linear-gradient(90deg, #1db954 80%, #14863d 100%);
     color: #fff;
     border-color: #14863d;
     box-shadow: 0 2px 12px #1db95455;
 }
-/* =========================
-   RESET & BASE
-========================= */
+
+/* ========================= RESET & BASE ========================= */
 * {
     margin: 0;
     padding: 0;
@@ -182,9 +381,7 @@ body {
     overflow: hidden;
 }
 
-/* =========================
-   LAYOUT PRINCIPAL
-========================= */
+/* ========================= LAYOUT PRINCIPAL ========================= */
 .app-container {
     display: grid;
     grid-template-columns: 250px 1fr;
@@ -192,9 +389,7 @@ body {
     width: 100vw;
 }
 
-/* =========================
-   SIDEBAR
-========================= */
+/* ========================= SIDEBAR ========================= */
 .sidebar {
     background: #181818;
     color: #e0e0e0;
@@ -233,25 +428,22 @@ body {
     color: #fff;
 }
 
-/* =========================
-   CONTENU PRINCIPAL
-========================= */
+/* ========================= CONTENU PRINCIPAL ========================= */
 .main-content {
     padding: 32px;
     overflow-y: auto;
     background: #1d1c31;
 }
 
-/* =========================
-   TITRE CALENDRIER
-========================= */
+/* ========================= TITRE CALENDRIER ========================= */
 .calendar-title-bar {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 18px;
     margin-bottom: 24px;
-    background: #222;
+    background: #1db954;
+    color: #fff;
     border-radius: 12px;
     padding: 18px 0;
     font-size: 2em;
@@ -271,9 +463,7 @@ body {
     background: #14863d;
 }
 
-/* =========================
-   CALENDRIER
-========================= */
+/* ========================= CALENDRIER ========================= */
 .calendar-table {
     width: 100%;
     max-width: 1600px;
@@ -282,28 +472,36 @@ body {
     background: #f7f7fa;
     border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 2px 24px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.10);
     border: 2.5px solid #e0e0e0;
 }
 
 .calendar-table th,
 .calendar-table td {
     border: 1.5px solid #bdbdbd;
-    height: 110px;
+    height: 50px;
     padding: 12px 0;
     text-align: center;
     vertical-align: top;
-    background: #f7f7fa;
+    background: #f7faf7;
     color: #23243a;
     position: relative;
     box-sizing: border-box;
     transition: border 0.2s, box-shadow 0.2s;
 }
 
+.calendar-table th {
+    background: #1db954;
+    color: #000;
+    font-weight: 700;
+    font-size: 1.3em;
+}
+
 /* Largeur fixe pour la colonne N° et largeur égale pour les jours */
 .calendar-table {
     table-layout: fixed;
 }
+
 .calendar-table th.weeknum-header {
     width: 60px;
     min-width: 60px;
@@ -321,11 +519,13 @@ body {
     text-align: center;
     transition: none;
 }
+
 .calendar-table td.weeknum {
     width: 60px;
     min-width: 60px;
     max-width: 60px;
 }
+
 .calendar-table th,
 .calendar-table td {
     width: calc((1600px - 60px) / 7);
@@ -342,6 +542,7 @@ body {
     position: relative;
     box-sizing: border-box;
 }
+
 .cell-day {
     font-size: 1.3em;
     font-weight: 700;
@@ -356,6 +557,7 @@ body {
     margin-bottom: 2px;
     box-shadow: 0 2px 8px #1db95433;
 }
+
 .cell-saint {
     font-size: 0.95em;
     color: #00bcd4;
@@ -366,12 +568,14 @@ body {
     overflow: hidden;
     max-width: 80px;
 }
+
 .cell-middle {
     min-height: 18px;
     font-size: 0.95em;
     color: #e0e0e0;
     margin-bottom: 4px;
 }
+
 .cell-bottom {
     min-height: 18px;
     font-size: 1.2em;
@@ -389,6 +593,7 @@ body {
     height: 100%;
     width: 100%;
 }
+
 .cell-zone-top {
     flex: 1 1 25%;
     display: flex;
@@ -399,17 +604,19 @@ body {
     font-size: 1em;
     font-weight: 600;
 }
+
 .cell-zone-middle {
     flex: 2 1 50%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     font-size: 0.98em;
     color: #151414;
     padding: 2px 6px;
     min-height: 28px;
     word-break: break-word;
 }
+
 .cell-zone-bottom {
     flex: 1 1 25%;
     display: flex;
@@ -441,9 +648,7 @@ body {
     font-weight: 600;
 }
 
-/* =========================
-   CELLULE JOUR
-========================= */
+/* ========================= CELLULE JOUR ========================= */
 .day-sticky {
     position: absolute;
     top: 6px;
@@ -462,9 +667,7 @@ body {
     z-index: 2;
 }
 
-/* =========================
-   BOUTONS NAVIGATION
-========================= */
+/* ========================= BOUTONS NAVIGATION ========================= */
 .calendar-controls {
     display: flex;
     justify-content: center;
@@ -487,16 +690,13 @@ body {
     background: #14863d;
 }
 
-/* =========================
-   GRILLE ANNÉE
-========================= */
+/* ========================= GRILLE ANNÉE ========================= */
 .year-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 18px;
     margin-top: 32px;
 }
-
 
 .year-month-mini {
     background: #222;
@@ -527,6 +727,7 @@ body {
     border-spacing: 2px 3px;
     margin-bottom: 0;
 }
+
 .mini-calendar-table th {
     color: #b0ffb0;
     font-size: 0.93em;
@@ -536,6 +737,7 @@ body {
     border: none;
     letter-spacing: 0.2em;
 }
+
 .mini-calendar-table td {
     font-size: 0.97em;
     padding: 2px 0 2px 0;
@@ -546,6 +748,7 @@ body {
     min-height: 1.7em;
     text-align: center;
 }
+
 .mini-calendar-table td.mini-today {
     background: #1db954;
     color: #fff;
@@ -557,9 +760,7 @@ body {
     border-color: #1db954;
 }
 
-/* =========================
-   BOUTON AUJOURD'HUI
-========================= */
+/* ========================= BOUTON AUJOURD'HUI ========================= */
 .btn-today {
     background: #222;
     color: #1db954;
