@@ -1,3 +1,9 @@
 # Ignorer les fichiers d'environnement sensibles
 .env
 .env.*
+
+# Dépendances Node
+node_modules/
+
+# Données locales
+data/
