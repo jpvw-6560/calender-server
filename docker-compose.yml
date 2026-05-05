@@ -3,15 +3,17 @@ services:
   calendar_server:
     build: .
     container_name: calendar_server
-    env_file:
-      - .env
-    ports:
-      - "3004:3004"
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      - PORT=3004
+      - DB_HOST=192.168.129.50
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=Jpvw1953!
+      - DB_NAME=calendar_db
     volumes:
       - ./public:/usr/src/app/public
       - ./src:/usr/src/app/src
       - ./config:/usr/src/app/config
       - ./controllers:/usr/src/app/controllers
-      - ./models:/usr/src/app/models
-      - ./src/views:/usr/src/app/src/views
-    restart: unless-stopped

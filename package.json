@@ -1,5 +1,5 @@
 {
-  "name": "calendar_server",
+  "name": "clepsydre",
   "version": "1.0.0",
   "description": "Application calendrier scolaire et gestion familiale (MVC, Node.js)",
   "main": "src/server.js",

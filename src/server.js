@@ -11,6 +11,7 @@ const path = require('path');
 const config = require('../config/config');
 const { initDatabase } = require('../config/database');
 const eventsRoutes = require('./routes/events');
+const alternanceRoutes = require('./routes/alternance');
 
 
 let dbReady = false;
@@ -41,6 +42,11 @@ app.use('/api/events', (req, res, next) => {
   }
   next();
 }, eventsRoutes);
+
+app.use('/api/alternance', (req, res, next) => {
+  if (!dbReady) return res.status(503).json({ error: 'Base de données non initialisée' });
+  next();
+}, alternanceRoutes);
 
 // Fallback SPA : toute autre route non-API renvoie index.html
 app.use((req, res, next) => {

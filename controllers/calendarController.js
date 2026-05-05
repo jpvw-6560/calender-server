@@ -14,8 +14,8 @@ exports.getEventById = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, date, type } = req.body;
-    const updated = await Event.update(id, { title, date, type });
+    const { title, date, dateEnd, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence, myHolidayWeek, eventTime } = req.body;
+    const updated = await Event.update(id, { title, date, dateEnd, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence, myHolidayWeek: myHolidayWeek ? Number(myHolidayWeek) : null, eventTime });
     if (!updated) return res.status(404).json({ error: 'Événement non trouvé.' });
     res.json({ message: 'Événement modifié.' });
   } catch (err) {
@@ -37,9 +37,9 @@ exports.getAllEvents = async (req, res) => {
 // Ajouter un événement (POST /api/events)
 exports.addEvent = async (req, res) => {
   try {
-    let { title, date, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence } = req.body;
+    let { title, date, dateEnd, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence, myHolidayWeek, eventTime } = req.body;
     if (type === 'birthday') recurrence = 'yearly';
-    await Event.create({ title, date, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence });
+    await Event.create({ title, date, dateEnd, type, icon, showIcon, showTitle, sendTelegram, telegramTime, recurrence, myHolidayWeek: myHolidayWeek ? Number(myHolidayWeek) : null, eventTime });
     res.status(201).json({ message: 'Événement ajouté.' });
   } catch (err) {
     res.status(500).json({ error: "Erreur lors de l'ajout de l'événement." });

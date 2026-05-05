@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📅 Calendar Server</title>
+    <title>⏳ Clepsydre – Le Maître du Temps</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
     <link rel="stylesheet" href="/css/style.css?v=1">
     <link rel="stylesheet" href="/css/notification.css?v=1">
 </head>
 <body>
     <div id="notification-container"></div>
-    <div style="display:flex; justify-content:flex-end; align-items:center; padding:18px 32px 0 0;">
+    <div class="top-editmode-bar">
         <label class="switch-editmode">
             <input type="checkbox" id="editmode-toggle">
             <span class="slider round"></span>
@@ -20,7 +20,7 @@
     <div class="app-container">
         <!-- Barre de navigation -->
         <nav class="sidebar">
-            <div class="logo">📅 Calendar Server</div>
+            <div class="logo"><span class="logo-title">⏳ Clepsydre</span><span class="logo-sub">Le Maître du Temps</span></div>
             <div id="sidebar-month" style="text-align:center; font-size:18px; margin-bottom:18px; color:#1db954;"></div>
             <div class="calendar-nav" style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px;">
                 <button class="btn-calnav" data-calview="year">Année</button>
@@ -28,11 +28,12 @@
                 <button class="btn-calnav" data-calview="week">Semaine</button>
             </div>
             <ul class="nav-menu">
-                <li class="nav-item active" data-view="events">📅 Événements</li>
-                <li class="nav-item" data-view="stats">📊 Statistiques</li>
+                <li class="nav-item" data-view="events">📅 Événements</li>
+                <li class="nav-item nav-subitem" data-view="alternance" style="display:none;">   🔄 Garde alternée</li>
             </ul>
-            <div style="margin-top:32px; text-align:center;">
-                <button id="btn-create-event" class="btn-calnav" style="width:90%;max-width:260px;">➕ Créer un événement</button>
+            <div style="margin-top:32px; text-align:center; display:flex; flex-direction:column; gap:10px; align-items:center;">
+                <button id="btn-create-event" class="btn-calnav" style="width:90%;max-width:260px;display:none;">➕ Créer un événement</button>
+                <button id="btn-print-pdf" class="btn-calnav" style="width:90%;max-width:260px;display:none;">🖨️ Calendrier en PDF</button>
             </div>
         </nav>
         <!-- Contenu principal -->
@@ -51,24 +52,45 @@
                         <select id="event-type" name="type" required>
                             <option value="birthday">Anniversaire</option>
                             <option value="recurring">Récurrent</option>
-                            <option value="holiday">Vacances scolaires</option>
+                            <option value="holiday">Congés scolaires</option>
+                            <option value="mykids">Semaine / W-E chez moi 👨‍👧‍👦</option>
                             <option value="single">Ponctuel</option>
                         </select>
                     </label>
                     <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label id="event-time-row" style="flex-direction:row;gap:12px;align-items:center;display:none;">
+                            <span>Heure :</span>
+                            <input type="time" id="event-time" name="eventTime" style="width:120px;">
+                            <span style="font-size:0.85em;color:#aaa;">(laisser vide = journée entière)</span>
+                        </label>
                         <label id="recurrence-row" style="flex-direction:row;gap:12px;align-items:center;display:none;">
                             <span>Récurrence :</span>
-                            <select id="event-recurrence" name="recurrence" style="width:180px;">
+                            <select id="event-recurrence" name="recurrence" style="width:220px;">
                                 <option value="daily">Tous les jours</option>
                                 <option value="weekly">Toutes les semaines</option>
-                                <option value="biweekly">Tous les quinze jours</option>
+                                <option value="biweekly">Tous les 15 jours (1 jour)</option>
+                                <option value="biweekly-2days">Week-end (sam+dim) tous les 15 jours</option>
                                 <option value="monthly">Tous les mois</option>
                                 <option value="yearly">Chaque année</option>
                             </select>
                         </label>
-                        <label style="flex-direction:row;gap:12px;align-items:center;">
-                            <span>Date de l'événement :</span>
-                            <input type="date" id="event-date" name="date" required style="width:160px;">
+                        <label id="date-start-row" style="flex-direction:row;gap:12px;align-items:center;">
+                            <span id="date-start-label">Date de l'événement :</span>
+                            <input type="date" id="event-date" name="date" required style="width:160px;cursor:pointer;" onclick="this.showPicker&&this.showPicker()">
+                            <button type="button" onclick="document.getElementById('event-date').showPicker&&document.getElementById('event-date').showPicker()" style="border:none;background:none;font-size:1.3em;cursor:pointer;" title="Ouvrir le calendrier">📅</button>
+                        </label>
+                        <label id="date-end-row" style="flex-direction:row;gap:12px;align-items:center;display:none;">
+                            <span>Date de fin :</span>
+                            <input type="date" id="event-date-end" name="dateEnd" style="width:160px;cursor:pointer;" onclick="this.showPicker&&this.showPicker()">
+                            <button type="button" onclick="document.getElementById('event-date-end').showPicker&&document.getElementById('event-date-end').showPicker()" style="border:none;background:none;font-size:1.3em;cursor:pointer;" title="Ouvrir le calendrier">📅</button>
+                        </label>
+                        <label id="holiday-week-row" style="flex-direction:row;gap:12px;align-items:center;display:none;">
+                            <span>Ma période de congés :</span>
+                            <select id="event-holiday-week" name="myHolidayWeek" style="width:280px;">
+                                <option value="0">Automatique (alternance + règle Noël années paires)</option>
+                                <option value="1">1ère période chez moi</option>
+                                <option value="2">2ème période chez moi</option>
+                            </select>
                         </label>
                         <label style="flex-direction:row;gap:12px;">
                             <input type="checkbox" id="event-show-title" name="showTitle" checked>
@@ -91,6 +113,7 @@
                                 <option value="🟦">🟦 PMC (sac bleu)</option>
                                 <option value="🗑️">🗑️ Déchets résiduels</option>
                                 <option value="🟩">🟩 Déchets organiques</option>
+                                <option value="👨‍👧‍👦">👨‍👧‍👦 Enfants</option>
                                 <option value="">(autre)</option>
                             </select>
                         </label>

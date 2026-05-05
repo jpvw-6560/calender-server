@@ -147,6 +147,8 @@ body {
     color: #e0e0e0;
     height: 100vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* =========================================================
@@ -155,7 +157,8 @@ body {
 .app-container {
     display: grid;
     grid-template-columns: 250px 1fr;
-    height: 100vh;
+    flex: 1;
+    min-height: 0;
     width: 100vw;
 }
 
@@ -170,14 +173,29 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    min-width: 220px;
+    width: 240px;
 }
 
 .sidebar .logo {
     color: #1db954;
-    font-size: 1.5em;
     font-weight: bold;
     margin-bottom: 30px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.logo-title {
+    font-size: 1.45em;
+    letter-spacing: 0.02em;
+}
+.logo-sub {
+    font-size: 0.82em;
+    color: #a0c8a8;
+    font-weight: 400;
+    letter-spacing: 0.04em;
 }
 
 .nav-menu {
@@ -294,7 +312,7 @@ body {
 
 .calendar-table td {
     min-width: 80px;
-    height: 140px;
+    height: 90px;
     border: 1.5px solid #bdbdbd;
     padding: 12px 0;
     text-align: center;
@@ -303,6 +321,30 @@ body {
     color: #23243a;
     position: relative;
     transition: background 0.2s;
+}
+
+/* Jours chez moi (enfants) : fond vert pâle — week-ends alternés */
+.calendar-table td.cell-mykids {
+    background: #d0f5d8 !important;
+    border-color: #7dd99a !important;
+}
+
+/* Jours scolaires de congés chez moi : fond vert foncé */
+.calendar-table td.cell-holiday-mine {
+    background: #4caf50 !important;
+    border-color: #2e7d32 !important;
+    color: #fff !important;
+}
+/* Numéro du jour toujours lisible sur vert foncé */
+.calendar-table td.cell-holiday-mine .cell-day {
+    color: #1a5c28 !important;
+    background: #fff !important;
+}
+
+/* Jours de congés scolaires chez l'autre parent : fond bleu pâle */
+.calendar-table td.cell-holiday {
+    background: #e3f0ff !important;
+    border-color: #90bef5 !important;
 }
 
 .calendar-table th {
@@ -345,15 +387,15 @@ body {
 }
 
 .cell-zone-top {
-    flex: 0 0 25%;
+    flex: 0 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 4px 8px 0;
     font-weight: 600;
 }
 
 .cell-zone-middle {
-    flex: 0 0 50%;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -366,7 +408,7 @@ body {
 }
 
 .cell-zone-bottom {
-    flex: 0 0 25%;
+    flex: 0 0 auto;
     display: flex;
     justify-content: center;
     gap: 6px;
@@ -413,30 +455,199 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.event-title-holiday {
+    background: #fff8e1;
+    color: #795548;
+    font-size: 0.85em;
+}
 
 /* =========================================================
    7. CALENDRIER — VUE SEMAINE
 ========================================================= */
-.calendar-week-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border: 2.5px solid #bdbdbd;
-}
-
-.calendar-week-table th,
-.calendar-week-table td {
-    border: 1px solid #bdbdbd;
-}
-
-.calendar-week-table th.week-col-header {
-    background: #fff;
+/* =========================================================
+   7. CALENDRIER — VUE SEMAINE
+========================================================= */
+.week-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 14px;
+    border: 2px solid #14863d;
+    color: #fff;
+    border-radius: 12px;
+    padding: 10px 0;
+    font-size: 1.2em;
     font-weight: 700;
+}
+.week-title-bar button {
+    background: #1db954;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 14px;
+    cursor: pointer;
+    font-size: 0.65em;
+}
+.week-title-bar button:hover { background: #14863d; }
+
+.week-wrapper {
+    overflow-x: auto;
+}
+
+.week-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: #1a1b2e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.18);
+}
+
+/* Colonne heure */
+.week-time-col {
+    width: 52px;
+    min-width: 52px;
+}
+.week-time-label {
+    width: 52px;
+    min-width: 52px;
+    font-size: 0.8em;
+    color: #aaa;
+    text-align: right;
+    padding-right: 8px;
+    vertical-align: top;
+    padding-top: 4px;
+    border-right: 1px solid #2e2f48;
+    white-space: nowrap;
+}
+.week-allday-label {
+    font-size: 0.72em;
+    color: #1db954;
+    font-weight: 600;
+}
+
+/* Entêtes jours */
+.week-day-header {
+    text-align: center;
+    padding: 8px 4px 6px;
+    border: 1px solid #2e2f48;
+    background: #23243a;
+    color: #ccc;
+    font-weight: 600;
+    min-width: 90px;
+}
+.week-day-header.wh-mykids       { background: #1a4a28; color: #a5f3b9; }
+.week-day-header.wh-holiday-mine { background: #2e7d32; color: #fff; }
+.week-day-header.wh-holiday      { background: #1a2a4a; color: #90bef5; }
+.week-day-header.wh-today        { outline: 3px solid #1db954; outline-offset: -2px; }
+.week-day-header.wh-weekend      { color: #ffe082; }
+
+.week-day-name {
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.85;
+}
+.week-day-num {
+    font-size: 1.6em;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 2px 0;
+}
+.wdn-today {
+    display: inline-block;
+    background: #1db954;
+    color: #fff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
     text-align: center;
 }
+.week-day-holiday {
+    font-size: 0.72em;
+    color: #ffcc80;
+    margin-top: 2px;
+}
 
-.calendar-week-table th.week-today {
-    border: 2.5px solid #1db954;
+/* Cellules journée entière */
+.week-allday-cell {
+    background: #1e1f35;
+    border: 1px solid #2e2f48;
+    padding: 3px 4px;
+    min-height: 28px;
+    vertical-align: top;
+}
+
+/* Cellules horaires */
+.week-cell {
+    background: #1a1b2e;
+    border: 1px solid #2a2b40;
+    padding: 2px 4px;
+    vertical-align: top;
+    min-height: 36px;
+    height: 36px;
+}
+.week-cell-we {
+    background: #1c1d32;
+    opacity: 0.85;
+}
+.week-cell-now {
+    border-top: 2px solid #1db954 !important;
+    background: #1a2a1e !important;
+}
+
+/* Événements dans les cellules */
+.week-ev {
+    background: #2d4a6e;
+    color: #c8e6fa;
+    border-radius: 5px;
+    padding: 2px 6px;
+    font-size: 0.82em;
+    margin: 1px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: default;
+    position: relative;
+}
+.week-ev-allday {
+    background: #1b4332;
+    color: #a9f5c3;
+}
+.week-ev-actions {
+    display: none;
+    gap: 2px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+.week-ev:hover .week-ev-actions {
+    display: flex;
+}
+.week-ev-edit, .week-ev-del {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    padding: 0 2px;
+    line-height: 1;
+    border-radius: 3px;
+    opacity: 0.8;
+}
+.week-ev-edit:hover { background: #1db95430; opacity: 1; }
+.week-ev-del:hover  { background: #e5393530; opacity: 1; }
+/* Cellule cliquable pour créer un événement */
+.week-cell[data-date], .week-allday-cell[data-date] {
+    cursor: pointer;
+}
+.week-cell[data-date]:hover, .week-allday-cell[data-date]:hover {
+    background: #1e2a3a !important;
 }
 /* ========================= BOUTONS CALENDRIER SIDEBAR ========================= */
 .btn-calnav {
@@ -473,35 +684,214 @@ body {
 }
 
 /* =========================================================
-   8. CALENDRIER — VUE ANNÉE
+   8. CALENDRIER — VUE ANNÉE (style calendrier des postes)
 ========================================================= */
+.year-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 20px;
+    border: 2.5px solid #14863d;
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 0;
+    font-size: 1.8em;
+    font-weight: 700;
+}
+.year-title-bar button {
+    background: #1db954;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 0.6em;
+}
+.year-title-bar button:hover { background: #14863d; }
+
+.year-postal-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.year-mini-month {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    border: 1.5px solid #e0e0e0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.year-mini-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85em;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0;
+    padding: 5px 0 4px 0;
+    background: #1db954;
+    border-radius: 6px 6px 0 0;
+}
+
+.year-mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 0.78em;
+}
+
+.year-mini-header-row th {
+    text-align: center;
+    font-weight: 700;
+    color: #fff;
+    background: #14863d;
+    padding: 3px 0;
+    font-size: 0.82em;
+}
+
+.year-mini-table th {
+    text-align: center;
+    font-weight: 700;
+    color: #fff;
+    background: #14863d;
+    padding: 3px 0;
+    font-size: 0.82em;
+}
+
+.year-mini-table td {
+    text-align: center;
+    padding: 2px 1px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #222;
+    line-height: 1.7;
+    position: relative;
+    transition: background 0.1s;
+}
+.year-mini-table td:hover {
+    background: #1db95430 !important;
+}
+.year-mini-table td.weekend-col {
+    font-weight: 700;
+    color: #1a1a1a;
+}
+.year-mini-header-row th.weekend-col {
+    color: #ffe082;
+}
+.year-mini-table td.cell-mykids {
+    background: #d0f5d8 !important;
+    color: #1a5c28 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+.year-mini-table td.cell-holiday-mine {
+    background: #4caf50 !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+.year-mini-table td.cell-holiday {
+    background: #e3f0ff !important;
+    color: #1a3c6c !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+.cell-today-mini {
+    background: #ffebee !important;
+    border: 3px solid #d32f2f !important;
+    color: #b71c1c !important;
+    font-weight: 900 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 0 1px #d32f2f55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+.mini-icons {
+    font-size: 0.7em;
+    display: block;
+    line-height: 1;
+}
+.mini-holiday {
+    font-size: 0.65em;
+    display: inline-block;
+    color: #e65100;
+    line-height: 1;
+    cursor: help;
+}
+/* Étoile rouge jour férié en vue mois (sous le numéro du jour) */
+.cell-holiday-star {
+    display: block;
+    color: #d32f2f;
+    font-size: 0.72em;
+    font-weight: 700;
+    cursor: help;
+    text-align: center;
+    line-height: 1.2;
+    margin: -2px 0 1px;
+}
+
+.year-legend {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    color: #ccc;
+    margin-top: 4px;
+    padding: 8px 0 2px 0;
+    flex-wrap: wrap;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.legend-swatch {
+    display: inline-block;
+    width: 18px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid #bbb;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+.legend-swatch.cell-mykids        { background: #d0f5d8; }
+.legend-swatch.cell-holiday-mine   { background: #4caf50; }
+.legend-swatch.cell-holiday        { background: #e3f0ff; }
+.legend-swatch.cell-today-mini     { background: #ffebee; border: 2px solid #d32f2f; }
+
+/* ── Pied de page congés (visible à l'écran ET à l'impression) ── */
+.print-footer-periods {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-top: 2px solid #1db954;
+    border-radius: 0 0 8px 8px;
+    font-size: 0.88em;
+    color: #333;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: center;
+}
+.print-footer-item {
+    white-space: nowrap;
+}
+
+/* Anciens styles (conservés pour compatibilité) */
 .year-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 18px;
 }
-
-.year-month-mini {
-    background: #222;
-    color: #e0e0e0;
-    border-radius: 12px;
-    padding: 18px 10px;
-    text-align: center;
-    cursor: pointer;
-    border: 2px solid transparent;
-}
-
-.year-month-mini:hover {
-    border-color: #1db954;
-}
-
-.mini-month-title {
-    font-size: 1.08em;
-    font-weight: 600;
-    color: #1db954;
-    margin-bottom: 8px;
-}
-
 .mini-calendar-table td {
     background: #23243a;
     border-radius: 4px;
@@ -666,9 +1056,413 @@ body {
     transform: translateX(20px);
 }
 
+/* =========================================================
+   IMPRESSION PDF — PORTRAIT
+========================================================= */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+    body {
+        padding: 8mm 10mm !important;
+    }
+
+    /* Masquer tout sauf le contenu calendrier */
+    body > div:first-child,          /* notification-container */
+    body > div:nth-child(2),         /* barre editmode */
+    .sidebar,
+    #notification-container,
+    .calendar-title-bar button,
+    .calendar-controls,
+    .btn-today,
+    #modal-event {
+        display: none !important;
+    }
+
+    body, html {
+        background: #fff !important;
+        color: #111 !important;
+    }
+
+    .app-container {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .main-content {
+        padding: 0 !important;
+        background: #fff !important;
+        overflow: visible !important;
+        width: 100% !important;
+    }
+
+    #content-view {
+        width: 100% !important;
+    }
+
+    /* Titre du mois */
+    .calendar-title-bar {
+        border: 1.5px solid #1db954 !important;
+        color: #111 !important;
+        border-radius: 8px !important;
+        font-size: 1.4em !important;
+        padding: 8px 0 !important;
+        margin-bottom: 10px !important;
+        justify-content: center !important;
+    }
+
+    /* Table calendrier mensuel */
+    .calendar-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+        border: 1.5px solid #bbb !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        font-size: 0.78em !important;
+        page-break-inside: avoid;
+    }
+
+    .calendar-table th {
+        background: #1db954 !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        height: 28px !important;
+        font-size: 0.9em !important;
+    }
+
+    .calendar-table td {
+        height: 72px !important;
+        min-width: 0 !important;
+        border: 1px solid #ccc !important;
+        padding: 4px 2px !important;
+        vertical-align: top !important;
+        color: #111 !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .calendar-table td.cell-mykids {
+        background: #d0f5d8 !important;
+        border-color: #7dd99a !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .calendar-table td.cell-holiday {
+        background: #e3f0ff !important;
+        border-color: #90bef5 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .calendar-today {
+        border: 2.5px solid #bfa100 !important;
+        background: #fffde7 !important;
+        color: #111 !important;
+        box-shadow: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .weeknum {
+        background: #f0f0f0 !important;
+        color: #1976d2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Légende couleurs en bas */
+    .calendar-table + * { display: none !important; }
+
+    /* Forcer la couleur du texte des événements */
+    .cal-event { font-size: 0.72em !important; }
+
+    /* ── Vue Année en impression (paysage via JS @page injection) ── */
+    .year-title-bar {
+        border: 1.5px solid #1db954 !important;
+        color: #111 !important;
+        font-size: 1.3em !important;
+        padding: 6px 0 !important;
+        margin-bottom: 8px !important;
+        border-radius: 8px !important;
+    }
+    .year-title-bar button { display: none !important; }
+    .year-postal-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+        margin-bottom: 8px !important;
+    }
+    .year-mini-month {
+        background: #fff !important;
+        border: 1px solid #bbb !important;
+        border-radius: 6px !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+    }
+    .year-mini-title {
+        background: #1db954 !important;
+        color: #fff !important;
+        font-size: 0.78em !important;
+        padding: 3px 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .year-mini-header-row th,
+    .year-mini-table th {
+        background: #14863d !important;
+        color: #fff !important;
+        padding: 2px 0 !important;
+        font-size: 0.72em !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .year-mini-header-row th.weekend-col {
+        color: #ffe082 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .year-mini-table { font-size: 0.72em !important; }
+    .year-mini-table td { padding: 1px 0 !important; line-height: 1.5 !important; }
+    .year-legend { color: #555 !important; font-size: 0.82em !important; }
+    .print-footer-periods {
+        margin-top: 6px !important;
+        padding: 4px 8px !important;
+        font-size: 0.78em !important;
+        border-top: 1.5px solid #1db954 !important;
+        background: #f9f9f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .event-title-holiday {
+        font-size: 0.75em !important;
+        padding: 0 3px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
 .editmode-label {
     margin-left: 6px;
     font-weight: 500;
     color: #cfd8dc;
 }
 
+/* Barre toggle editmode (hors sidebar) */
+.top-editmode-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 18px 32px 0 0;
+}
+
+/* =========================================================
+   RESPONSIVE — TABLETTE (≤ 900px)
+========================================================= */
+@media (max-width: 900px) {
+    .app-container {
+        grid-template-columns: 190px 1fr;
+    }
+    .sidebar {
+        min-width: 190px;
+        width: 190px;
+        padding: 14px 12px;
+    }
+    .main-content {
+        padding: 20px 14px;
+    }
+    .year-postal-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+}
+
+/* =========================================================
+   RESPONSIVE — MOBILE (≤ 640px)
+========================================================= */
+@media (max-width: 640px) {
+    /* Toggle editmode : masqué sur mobile (lecture seule) */
+    .top-editmode-bar { display: none; }
+    /* Boutons Créer / PDF : masqués sur mobile */
+    #btn-create-event { display: none; }
+    #btn-print-pdf    { display: none; }
+
+    /* body + html : occupent exactement 100% de l écran, pas de scroll propre */
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* app-container : flex-colonne qui prend tout l espace restant */
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        width: 100vw;
+    }
+
+    /* Sidebar = barre horizontale compacte, hauteur naturelle, ne scrolle pas */
+    .sidebar {
+        flex-shrink: 0;
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        overflow: visible;
+        border-right: none;
+        border-bottom: 1px solid #282828;
+        padding: 8px 12px 10px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 10px;
+        background: #181818;
+        z-index: 50;
+    }
+    .sidebar .logo {
+        margin-bottom: 0;
+        flex-shrink: 0;
+        flex-direction: row;
+        gap: 6px;
+    }
+    .logo-title { font-size: 1em; }
+    .logo-sub   { display: none; }
+    #sidebar-month { display: none; }
+
+    /* Boutons vues calendrier en ligne */
+    .calendar-nav {
+        flex-direction: row !important;
+        gap: 5px !important;
+        margin-bottom: 0 !important;
+    }
+    .btn-calnav {
+        font-size: 0.8em;
+        padding: 7px 10px;
+        margin-bottom: 0;
+        white-space: nowrap;
+        width: auto;
+        display: inline-block;
+    }
+
+    /* Nav items en ligne */
+    .nav-menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin: 0;
+    }
+    .nav-item {
+        padding: 7px 10px;
+        font-size: 0.8em;
+        margin-bottom: 0;
+        white-space: nowrap;
+        border-radius: 20px;
+    }
+
+    /* main-content = seule zone scrollable, prend tout l espace restant */
+    .main-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px 8px;
+    }
+
+    /* Titres */
+    .calendar-title-bar {
+        font-size: 1.1em;
+        padding: 10px 0;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    .year-title-bar {
+        font-size: 1.1em;
+        padding: 10px 0;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    .week-title-bar {
+        font-size: 0.9em;
+        padding: 8px 0;
+        gap: 8px;
+    }
+
+    /* Vue ANNEE : 1 colonne */
+    .year-postal-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .year-mini-title { font-size: 0.72em; }
+
+    /* Vue MOIS */
+    .calendar-table {
+        font-size: 0.8em;
+    }
+    .calendar-table th {
+        font-size: 0.75em;
+        padding: 4px 1px;
+    }
+
+    /* Vue SEMAINE : scroll horizontal touch-friendly */
+    .week-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .week-table {
+        min-width: 480px;
+        font-size: 0.82em;
+    }
+    .week-day-header {
+        min-width: 58px;
+        padding: 5px 2px 4px;
+    }
+    .week-day-num {
+        font-size: 1.1em;
+    }
+    .wdn-today {
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+    }
+    .week-time-col, .week-time-label {
+        width: 36px;
+        min-width: 36px;
+        font-size: 0.7em;
+        padding-right: 4px;
+    }
+    .week-cell, .week-allday-cell {
+        min-width: 58px;
+    }
+
+    /* MODALE : feuille montante */
+    .modal-event-bg {
+        align-items: flex-end;
+    }
+    .modal-event-box {
+        width: 100%;
+        max-width: 100%;
+        max-height: 92vh;
+        border-radius: 18px 18px 0 0;
+        overflow-y: auto;
+    }
+
+    /* Liste evenements : 1 colonne */
+    .event-list-modern {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .event-card {
+        max-width: 100%;
+        min-width: unset;
+    }
+}
