@@ -1240,6 +1240,15 @@ body {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
+    #print-date-footer {
+        display: block !important;
+        position: fixed !important;
+        bottom: 6mm !important;
+        right: 10mm !important;
+        font-size: 0.72em !important;
+        color: #888 !important;
+        font-style: italic !important;
+    }
     .event-title-holiday {
         font-size: 0.75em !important;
         padding: 0 3px !important;
@@ -1247,6 +1256,8 @@ body {
         print-color-adjust: exact;
     }
 }
+
+#print-date-footer { display: none; }
 
 .editmode-label {
     margin-left: 6px;

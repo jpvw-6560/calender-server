@@ -91,6 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
       style.textContent = '@page { size: A4 landscape; }';
       document.head.appendChild(style);
 
+      // Injecter la date d'impression
+      const footer = document.getElementById('print-date-footer');
+      if (footer) {
+        const now = new Date();
+        footer.textContent = 'Imprimé le ' + now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ' à ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      }
+
       window.print();
 
       setTimeout(() => {
