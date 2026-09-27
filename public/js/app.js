@@ -253,6 +253,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const editModeToggle = document.getElementById('editmode-toggle');
   if (editModeToggle) {
     editModeToggle.addEventListener('change', async () => {
+      state.editMode = editModeToggle.checked;
+      if (!editModeToggle.checked) state.showPastEvents = false;
       updateCreateButton();
       const activeNav = document.querySelector('.nav-item.active');
       if (activeNav && activeNav.dataset.view === 'events')     await renderEventList();
@@ -334,12 +336,51 @@ async function renderEventList() {
   const { fetchEvents, fetchAlternance, deleteAlternance } = await import('./events.js');
   const [eventsData, altEntries] = await Promise.all([fetchEvents(), fetchAlternance()]);
   let events = Array.isArray(eventsData) ? eventsData : (eventsData.events || []);
-  events = events.slice().sort((a, b) =>
-    (a.title || '').localeCompare(b.title || '', 'fr', { sensitivity: 'base' })
-  );
+  events = events.slice();
+  const hasStoredEvents = events.length > 0;
   const editMode = state.editMode;
+  const showPastEvents = editMode && state.showPastEvents;
 
   const fmtDate = (s) => s ? new Date(s).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isPastEvent = (event) => {
+    const isRecurring = event.type === 'birthday' || (event.recurrence && event.recurrence !== 'none');
+    if (isRecurring) return false;
+
+    const effectiveEndDate = event.dateEnd || event.date;
+    if (!effectiveEndDate) return false;
+
+    const endDate = new Date(effectiveEndDate);
+    endDate.setHours(0, 0, 0, 0);
+    return endDate < today;
+  };
+  const getNextOccurrenceDate = (event) => {
+    const occurrence = new Date(event.date);
+    if (Number.isNaN(occurrence.getTime())) return new Date(8640000000000000);
+    occurrence.setHours(0, 0, 0, 0);
+
+    const recurrence = event.type === 'birthday' ? 'yearly' : event.recurrence;
+    if (!recurrence || recurrence === 'none' || occurrence >= today) return occurrence;
+
+    if (recurrence === 'yearly') {
+      occurrence.setFullYear(today.getFullYear());
+      if (occurrence < today) occurrence.setFullYear(occurrence.getFullYear() + 1);
+    } else if (recurrence === 'monthly') {
+      while (occurrence < today) occurrence.setMonth(occurrence.getMonth() + 1);
+    } else {
+      const intervalDays = recurrence === 'daily' ? 1 : recurrence === 'weekly' ? 7 : 14;
+      const elapsedDays = Math.floor((today - occurrence) / 86400000);
+      occurrence.setDate(occurrence.getDate() + Math.ceil(elapsedDays / intervalDays) * intervalDays);
+    }
+    return occurrence;
+  };
+  events = events
+    .filter(event => showPastEvents || !isPastEvent(event))
+    .sort((a, b) => {
+      const dateDifference = getNextOccurrenceDate(a) - getNextOccurrenceDate(b);
+      return dateDifference || (a.title || '').localeCompare(b.title || '', 'fr', { sensitivity: 'base' });
+    });
 
   // Section garde alternée
   const altFormHtml = editMode ? `
@@ -396,14 +437,21 @@ async function renderEventList() {
     ${altFormHtml}
     <div class="event-list-modern">${altListHtml}</div>`;
 
-  if (!events.length && !altEntries.length) {
+  if (!hasStoredEvents && !altEntries.length) {
     content.innerHTML = '<div class="event-list-empty">Aucun événement enregistré.</div>';
     return;
   }
 
-  const eventsHtml = events.length === 0 ? '' : `
-    <div class="event-list-title">📅 Tous les événements</div>
-    <div class="event-list-modern">
+  const eventsHtml = !hasStoredEvents ? '' : `
+    <div class="event-list-toolbar">
+      <div class="event-list-title">📅 Tous les événements</div>
+      ${editMode ? `<label class="switch-editmode event-past-toggle">
+        <input type="checkbox" id="show-past-events-toggle"${state.showPastEvents ? ' checked' : ''}>
+        <span class="slider round"></span>
+        <span>Afficher les événements passés</span>
+      </label>` : ''}
+    </div>
+    ${events.length === 0 ? '<div class="event-list-empty">Aucun événement à venir.</div>' : `<div class="event-list-modern">
       ${events.map(ev => {
         const dateStr    = ev.date    ? new Date(ev.date).toLocaleDateString('fr-FR')    : '';
         const dateEndStr = ev.dateEnd ? new Date(ev.dateEnd).toLocaleDateString('fr-FR') : '';
@@ -411,7 +459,7 @@ async function renderEventList() {
           ? `Du ${dateStr} au ${dateEndStr}`
           : dateStr;
         return `
-        <div class="event-card">
+        <div class="event-card${isPastEvent(ev) ? ' event-card-past' : ''}">
           <div class="event-card-header">
             <span class="event-card-title">${ev.title || '(Sans titre)'}</span>
             ${ev.icon ? `<span class="event-card-icon">${ev.icon}</span>` : ''}
@@ -427,9 +475,14 @@ async function renderEventList() {
           </div>` : ''}
         </div>`;
       }).join('')}
-    </div>`;
+    </div>`}`;
 
   content.innerHTML = eventsHtml + altHtml;
+
+  document.getElementById('show-past-events-toggle')?.addEventListener('change', async event => {
+    state.showPastEvents = event.target.checked;
+    await renderEventList();
+  });
 
   // Boutons modifier
   document.querySelectorAll('.event-edit-btn').forEach(btn => {
