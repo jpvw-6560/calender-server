@@ -565,7 +565,14 @@ export function renderMonth() {
       </td>`;
       if ((start + day) % 7 === 0) html += '</tr><tr>';
     }
-    html += '</tr></table>';
+    html += `</tr></table>
+      <div class="year-legend">
+        <span class="legend-item"><span class="legend-swatch cell-mykids"></span> Week-ends chez papa 👨‍👧‍👦</span>
+        <span class="legend-item"><span class="legend-swatch cell-holiday-mine"></span> Congés scolaires chez papa</span>
+        <span class="legend-item"><span class="legend-swatch cell-holiday"></span> Congés scolaires chez maman</span>
+        <span class="legend-item"><span class="legend-swatch cell-today-mini"></span> Aujourd'hui</span>
+        <span class="legend-item">★ Jour férié</span>
+      </div>`;
 
     // Pied de page : congés scolaires du mois
     const monthStart = new Date(year, month, 1);
