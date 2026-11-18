@@ -58,8 +58,13 @@ app.use((req, res, next) => {
 });
 
 // Démarrer le serveur immédiatement
-app.listen(config.port, '0.0.0.0', () => {
-  console.log(`Serveur calendrier API lancé sur le port ${config.port}`);
+const server = app.listen(config.port, config.host, () => {
+  console.log(`Serveur calendrier API lancé sur ${config.host}:${config.port}`);
+});
+
+server.on('error', (error) => {
+  console.error('Impossible de démarrer le serveur HTTP :', error);
+  process.exitCode = 1;
 });
 
 // Initialiser la base en arrière-plan
